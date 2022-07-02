@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Route} from 'react-router-dom';
 import Home from './components/Home';
 import UserProfile from './components/UserProfile';
 import LogIn from './components/Login';
+import axios from 'axios';
 
 class App extends Component {
   constructor() {  // Create and initialize state
@@ -15,7 +16,36 @@ class App extends Component {
         userName: 'Joe Smith',
         memberSince: '11/22/99',
       }
+	  credits: [],
+	  debits: []
     }
+  }
+  
+  // Make API requests
+  async componentDidMount() {
+	let creditsAPI = 'https://moj-api.herokuapp.com/credits';
+	let debitsAPI = 'https://moj-api.herokuapp.com/debits';
+	
+	try {
+		let creditsResponse = await axios.get(creditsAPI);
+		this.setState({credits: creditsResponse.data});
+	} catch (e) {
+		if (e.response) {
+			console.log(e.response.data);
+			console.log(e.response.status);
+		}
+	}
+	
+	try {
+		let debitsReponse = await axios.get(debitsAPI);
+		this.setState({debits: debitsReponse.data});
+	} catch (e) {
+		if (e.response) {
+			console.log(e.response.data);
+			console.log(e.response.status);
+		}
+	}
+	
   }
 
   // Update state's currentUser (userName) after "Log In" button is clicked
