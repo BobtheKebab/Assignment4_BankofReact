@@ -25,6 +25,7 @@ class App extends Component {
   
   // Make API requests
   async componentDidMount() {
+	  
 	let creditsAPI = 'https://moj-api.herokuapp.com/credits';
 	let debitsAPI = 'https://moj-api.herokuapp.com/debits';
 	
@@ -48,7 +49,21 @@ class App extends Component {
 		}
 	}
 	
+	this.sumBalance();
+	
   }
+  
+	// Calculate and set current balance
+	sumBalance() {
+		let total = 0;  
+		for (let i = 0; i < this.state.credits.length; i++) {
+      total += this.state.credits[i].amount;
+    }
+    for (let i = 0; i < this.state.debits.length; i++) {
+      total -= this.state.debits[i].amount;
+    }
+		this.setState({accountBalance: total.toFixed(2)});
+	}
   
   // Add debit
   addDebit() {
@@ -74,8 +89,8 @@ class App extends Component {
       <UserProfile userName={this.state.currentUser.userName} memberSince={this.state.currentUser.memberSince}  />
     );
     const LogInComponent = () => (<LogIn user={this.state.currentUser} mockLogIn={this.mockLogIn} />)  // Pass props to "LogIn" component
-	const CreditsComponent = () => (<Credits credits={this.state.credits} addCredit={this.addCredit} />);
-	const DebitsComponent = () => (<Debits debits={this.state.debits} addDebit={this.addDebit} />);
+    const CreditsComponent = () => (<Credits credits={this.state.credits} addCredit={this.addCredit} accountBalance={this.state.accountBalance} />);
+    const DebitsComponent = () => (<Debits debits={this.state.debits} addDebit={this.addDebit} accountBalance={this.state.accountBalance} />);
 
     return (
       <Router>
