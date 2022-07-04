@@ -11,7 +11,7 @@ import axios from 'axios';
 
 class App extends Component {
   constructor() {  // Create and initialize state
-    super(); 
+    super();
     this.state = {
       accountBalance: 1234567.89,
       currentUser: {
@@ -22,12 +22,13 @@ class App extends Component {
 	  debits: []
     }
   }
-  
+
   // Make API requests
   async componentDidMount() {
+
 	let creditsAPI = 'https://moj-api.herokuapp.com/credits';
 	let debitsAPI = 'https://moj-api.herokuapp.com/debits';
-	
+
 	try {
 		let creditsResponse = await axios.get(creditsAPI);
 		this.setState({credits: creditsResponse.data});
@@ -37,7 +38,7 @@ class App extends Component {
 			console.log(e.response.status);
 		}
 	}
-	
+
 	try {
 		let debitsReponse = await axios.get(debitsAPI);
 		this.setState({debits: debitsReponse.data});
@@ -47,35 +48,55 @@ class App extends Component {
 			console.log(e.response.status);
 		}
 	}
-	
-  }
-  
-  // Add debit
-  addDebit() {
-	  console.log("debit added");
-  }
-  
-  // Add credit
-  addCredit() {
-	  console.log("credit added");
+
+	this.sumBalance();
+
   }
 
+	// Calculate and set current balance
+	sumBalance() {
+		let total = 0;
+		for (let i = 0; i < this.state.credits.length; i++) {
+      total += this.state.credits[i].amount;
+    }
+    for (let i = 0; i < this.state.debits.length; i++) {
+      total -= this.state.debits[i].amount;
+    }
+		this.setState({accountBalance: total.toFixed(2)});
+	}
+
+
+  // Addin in debit and updating
+  addDebit(debits) {
+    this.state.debits.push(debits);
+    this.setState({debits: this.state.debits});
+    this.totalBalance();
+  }
+
+  // Adding in credit and updating
+  addCredit (credits){
+    this.state.credits.push(credits);
+    this.setState({credits: this.state.credits});
+    this.sumBalance();
+  }
+
+
   // Update state's currentUser (userName) after "Log In" button is clicked
-  mockLogIn = (logInInfo) => {  
+  mockLogIn = (logInInfo) => {
     const newUser = {...this.state.currentUser}
     newUser.userName = logInInfo.userName
     this.setState({currentUser: newUser})
   }
 
   // Create Routes and React elements to be rendered using React components
-  render() {  
+  render() {
     const HomeComponent = () => (<Home accountBalance={this.state.accountBalance}/>);
     const UserProfileComponent = () => (
       <UserProfile userName={this.state.currentUser.userName} memberSince={this.state.currentUser.memberSince}  />
     );
     const LogInComponent = () => (<LogIn user={this.state.currentUser} mockLogIn={this.mockLogIn} />)  // Pass props to "LogIn" component
-	const CreditsComponent = () => (<Credits credits={this.state.credits} addCredit={this.addCredit} />);
-	const DebitsComponent = () => (<Debits debits={this.state.debits} addDebit={this.addDebit} />);
+    const CreditsComponent = () => (<Credits credits={this.state.credits} addCredit={this.addCredit} accountBalance={this.state.accountBalance} />);
+    const DebitsComponent = () => (<Debits debits={this.state.debits} addDebit={this.addDebit} accountBalance={this.state.accountBalance} />);
 
     return (
       <Router>
