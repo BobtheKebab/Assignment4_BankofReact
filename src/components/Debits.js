@@ -1,5 +1,7 @@
 // src/components/Debits.js
 
+import AccountBalance from './AccountBalance';
+
 const Debits = (props) => {
 	let debitsView = () => {
     const { debits } = props;
@@ -17,6 +19,7 @@ const Debits = (props) => {
         <input type="number" name="amount" />
         <button type="submit">Add Debit</button>
       </form>
+      <AccountBalance accountBalance={props.accountBalance}/>
     </div>
   )
 }
